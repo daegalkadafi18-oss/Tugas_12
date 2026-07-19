@@ -1,0 +1,32 @@
+{
+  "Arborio": {
+    "train": 70,
+    "validation": 15,
+    "test": 15,
+    "total": 100
+  },
+  "Basmati": {
+    "train": 70,
+    "validation": 15,
+    "test": 15,
+    "total": 100
+  },
+  "Ipsala": {
+    "train": 70,
+    "validation": 15,
+    "test": 15,
+    "total": 100
+  },
+  "Jasmine": {
+    "train": 70,
+    "validation": 15,
+    "test": 15,
+    "total": 100
+  },
+  "Karacadag": {
+    "train": 70,
+    "validation": 15,
+    "test": 15,
+    "total": 100
+  }
+}

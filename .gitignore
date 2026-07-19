@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Dataset mentah & hasil split (besar, tidak perlu di-commit)
+data/
+
+# Model & hasil evaluasi SENGAJA TIDAK di-ignore supaya bisa dideploy ke Railway:
+# models/xception_rice.keras
+# models/class_names.pkl
+# results/

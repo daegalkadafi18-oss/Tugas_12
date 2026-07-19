@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Beras.Scan — Pindai Jenis Beras{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="eyebrow">Transfer Learning · Xception · 5 Kelas</div>
+  <h1>Pindai butir beras, kenali <em>varietasnya</em> secara instan.</h1>
+  <p class="lead">
+    Unggah satu foto butir beras — model akan mengenali apakah itu Arborio, Basmati,
+    Ipsala, Jasmine, atau Karacadag, lengkap dengan tingkat keyakinan tiap kelas.
+  </p>
+</section>
+
+<section class="scan-panel">
+  <form id="upload-form">
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="file-input" accept="image/*">
+
+      <svg class="conveyor-icon" id="dz-icon" viewBox="0 0 48 48" fill="none">
+        <ellipse cx="18" cy="24" rx="6" ry="11" transform="rotate(-15 18 24)" fill="currentColor" opacity="0.85"/>
+        <ellipse cx="30" cy="20" rx="5" ry="9" transform="rotate(20 30 20)" fill="currentColor" opacity="0.6"/>
+        <ellipse cx="27" cy="33" rx="5" ry="9" transform="rotate(60 27 33)" fill="currentColor" opacity="0.45"/>
+      </svg>
+
+      <div class="hint" id="dz-hint"><strong>Klik untuk unggah</strong> atau seret foto butir beras ke sini</div>
+
+      <div class="preview-wrap" id="preview-wrap">
+        <img id="preview-img" src="" alt="Pratinjau gambar beras">
+        <div class="scan-line"></div>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <span class="status-text" id="status-text">Belum ada gambar dipilih</span>
+      <div style="display:flex; gap:0.75rem;">
+        <button type="button" class="btn ghost" id="reset-btn">Ganti Gambar</button>
+        <button type="submit" class="btn" id="analyze-btn" disabled>Analisis Beras</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="error-box" id="error-box"></div>
+
+  <div class="result-panel" id="result-panel">
+    <div class="result-hero">
+      <span class="label" id="res-label">—</span>
+      <span class="confidence" id="res-confidence"></span>
+    </div>
+    <p class="result-info" id="res-info"></p>
+
+    <div class="prob-list" id="prob-list"></div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.RICE_CLASSES_HINT = "Arborio, Basmati, Ipsala, Jasmine, Karacadag";
+</script>
+{% endblock %}

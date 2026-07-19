@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Cara Kerja Model — Beras.Scan{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="eyebrow">Di Balik Layar</div>
+  <h1>Bagaimana model ini <em>belajar</em> mengenali beras?</h1>
+  <p class="lead">
+    Penjelasan singkat mengenai algoritma Xception, konsep transfer learning,
+    serta arsitektur dan dataset yang digunakan pada tugas ini.
+  </p>
+</section>
+
+<section class="section">
+  <h2>1. Apa itu Transfer Learning?</h2>
+  <p>
+    Transfer learning adalah teknik memanfaatkan model yang sudah dilatih sebelumnya
+    (pre-trained) pada dataset besar — dalam hal ini ImageNet (&gt;1 juta gambar, 1000 kelas) —
+    lalu menggunakan kembali "pengetahuan visual" yang sudah dipelajarinya (tepi, tekstur, bentuk,
+    pola) untuk tugas baru yang lebih spesifik: mengenali jenis beras. Dengan cara ini, model tidak
+    perlu belajar dari nol, sehingga jauh lebih cepat dan tetap akurat meski data latih terbatas
+    (pada tugas ini hanya 100 gambar per kelas).
+  </p>
+</section>
+
+<section class="section">
+  <h2>2. Mengapa Xception?</h2>
+  <p>
+    Xception ("Extreme Inception") adalah arsitektur CNN yang menggantikan konvolusi biasa dengan
+    <strong>depthwise separable convolution</strong>: sebuah konvolusi standar dipecah menjadi dua
+    langkah — konvolusi per-kanal (depthwise) yang menangkap pola spasial tiap channel secara terpisah,
+    lalu konvolusi 1×1 (pointwise) yang menggabungkan informasi antar channel. Pemisahan ini membuat
+    jumlah parameter jauh lebih sedikit dibanding konvolusi biasa, namun kemampuan ekstraksi fiturnya
+    tetap kuat — cocok untuk mengenali tekstur & bentuk halus butir beras.
+  </p>
+  <div class="card-grid">
+    <div class="info-card">
+      <div class="k">Tahap 1</div>
+      <h3>Entry Flow</h3>
+      <p>Menyaring fitur dasar: tepi, gradasi warna, kontur awal butir beras.</p>
+    </div>
+    <div class="info-card">
+      <div class="k">Tahap 2</div>
+      <h3>Middle Flow</h3>
+      <p>Diulang 8×, memperdalam representasi fitur bentuk & tekstur beras.</p>
+    </div>
+    <div class="info-card">
+      <div class="k">Tahap 3</div>
+      <h3>Exit Flow</h3>
+      <p>Merangkum fitur menjadi representasi tingkat tinggi sebelum diklasifikasi.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>3. Arsitektur Model pada Tugas Ini</h2>
+  <p>
+    Backbone Xception dibekukan (frozen) — bobotnya tidak diubah selama training — sementara
+    beberapa layer baru (head) ditambahkan di atasnya dan dilatih khusus untuk 5 kelas beras.
+  </p>
+  <div class="flow">
+    <div class="flow-step frozen">
+      <div class="n">INPUT</div>
+      <div class="t">Gambar 299×299×3</div>
+      <div class="d">Foto butir beras</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step frozen">
+      <div class="n">BACKBONE (frozen)</div>
+      <div class="t">Xception</div>
+      <div class="d">Pretrained ImageNet</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step trainable">
+      <div class="n">HEAD</div>
+      <div class="t">GlobalAveragePooling2D</div>
+      <div class="d">Meringkas feature map</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step trainable">
+      <div class="n">HEAD</div>
+      <div class="t">Dense 256 (ReLU)</div>
+      <div class="d">+ Dropout 0.3</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step trainable">
+      <div class="n">OUTPUT</div>
+      <div class="t">Dense 5 (Softmax)</div>
+      <div class="d">Probabilitas tiap kelas</div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="dot-swatch" style="background:var(--husk-600)"></i> Layer dibekukan (tidak dilatih ulang)</span>
+    <span><i class="dot-swatch" style="background:var(--grain-500)"></i> Layer baru (dilatih)</span>
+  </div>
+</section>
+
+<section class="section">
+  <h2>4. Dataset</h2>
+  <p>
+    Dataset diambil langsung dari Kaggle: <strong>Rice Image Dataset</strong> oleh Murat Koklu,
+    diunduh otomatis di dalam <code>train.py</code> menggunakan <code>kagglehub</code>. Untuk menjaga
+    proses training tetap ringan, hanya 100 gambar per kelas yang diambil sebagai sampel.
+  </p>
+  <div class="card-grid">
+    <div class="info-card"><div class="k">Kelas</div><h3>5 Varietas</h3><p>Arborio, Basmati, Ipsala, Jasmine, Karacadag</p></div>
+    <div class="info-card"><div class="k">Sampel</div><h3>100 / kelas</h3><p>Total 500 gambar (train + validasi)</p></div>
+    <div class="info-card"><div class="k">Split</div><h3>80% / 20%</h3><p>Data latih vs data validasi</p></div>
+    <div class="info-card"><div class="k">Sumber</div><h3>Kaggle</h3><p>muratkokludataset/rice-image-dataset</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>5. Konfigurasi Training</h2>
+  <div class="card-grid">
+    <div class="info-card"><div class="k">Epoch</div><h3>15 (sedang)</h3><p>Dengan EarlyStopping bila validasi tak lagi membaik</p></div>
+    <div class="info-card"><div class="k">Optimizer</div><h3>Adam</h3><p>Learning rate 1e-4</p></div>
+    <div class="info-card"><div class="k">Loss</div><h3>Categorical Crossentropy</h3><p>Untuk klasifikasi multi-kelas</p></div>
+    <div class="info-card"><div class="k">Augmentasi</div><h3>Ringan</h3><p>Rotasi, geser, zoom, flip horizontal</p></div>
+  </div>
+</section>
+{% endblock %}
